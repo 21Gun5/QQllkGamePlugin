@@ -79,7 +79,7 @@ LRESULT CALLBACK WindowProc(
 			mov ecx, 0x45DEBC
 			mov ecx, [ecx]
 			LEA ECX, DWORD PTR DS : [ecx + 0x494]
-			PUSH 0xF0
+			PUSH 0xF0// 若炸弹，则F4
 			PUSH 0
 			PUSH 0
 			mov eax, 0x0041E691
@@ -175,6 +175,31 @@ LRESULT CALLBACK WindowProc(
 		}
 
 		return DefWindowProc(hWnd, Msg, wParam, lParam);// 要加此，否则运行完自动结束
+	}
+	else if (Msg == WM_DATA3)
+	{
+	OutputDebugString(L"无限炸弹");
+
+
+
+	//0041DE4D | .  8B86 9404000 > MOV EAX, DWORD PTR DS : [ESI + 0x494]
+	//0041DE53 | .  8D8E 9404000 > LEA ECX, DWORD PTR DS : [ESI + 0x494]
+	//0041DE59 | .  52           PUSH EDX
+	//0041DE5A | .  53           PUSH EBX
+	//0041DE5B | .  53           PUSH EBX
+	//0041DE5C | .FF50 28      CALL DWORD PTR DS : [EAX + 0x28];  使用指南针道具
+	_asm
+	{
+		mov ecx, 0x45DEBC
+		mov ecx, [ecx]
+		LEA ECX, DWORD PTR DS : [ecx + 0x494]
+		PUSH 0xF4// 若指南针，则F0
+		PUSH 0
+		PUSH 0
+		mov eax, 0x0041E691
+		call eax
+	}
+	return DefWindowProc(hWnd, Msg, wParam, lParam);
 	}
 	return CallWindowProc(g_oldProc,hWnd,Msg,wParam,lParam);
 }
